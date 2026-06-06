@@ -1,0 +1,28 @@
+package com.hotelos.maintenanceservice.config;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+@Configuration
+@OpenAPIDefinition(
+        info = @Info(
+                title = "HotelOS - Maintenance & Repair Service API",
+                version = "1.0",
+                description = "Xonalardagi va mehmonxonadagi texnik nosozliklar, ta'mirlash buyurtmalari (Tasks) va texnik xodimlar ishini muvofiqlashtirish xizmati."
+        )
+)
+public class OpenApiConfig {
+
+        @Bean
+        public OpenAPI customOpenAPI() {
+                return new OpenAPI()
+                        .servers(List.of(
+                                new Server().url("/")
+                        ));
+        }
+}
