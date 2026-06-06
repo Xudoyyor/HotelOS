@@ -1,0 +1,27 @@
+# Build artefaktlari
+build/
+!src/**/build/
+.gradle/
+out/
+bin/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS
+.DS_Store
+__MACOSX/
+Thumbs.db
+
+# Loglar
+*.log
+
+# Yuklangan arxivlar (manba kod repо'ga kerak emas)
+*.zip
