@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>HotelOS - Real Vaqtli Panel</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .dashboard-box { border: 2px solid #0056b3; padding: 15px; border-radius: 10px; background: white; }
+        .notification { padding: 10px; margin: 5px 0; background: #e3f2fd; border-left: 5px solid #0056b3; }
+    </style>
+</head>
+<body>
+
+<h1>HotelOS: Jonli Operatsiyalar Paneli</h1>
+<div class="dashboard-box">
+    <h3>So'nggi hodisalar (Sahifa yangilanmayapti!)</h3>
+    <div id="messages"></div>
+</div>
+
+<script>
+    // Toza mahalliy WebSocket orqali ulanish - muammolarni chetlab o'tadi
+    var socket = new WebSocket('ws://localhost:8086/ws-hotel');
+    var stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+        console.log('Muvaffaqiyatli ulandi: ' + frame);
+
+        stompClient.subscribe('/topic/updates', function (notification) {
+            var messageList = document.getElementById('messages');
+            var newMessage = document.createElement('div');
+            newMessage.className = 'notification';
+
+            var time = new Date().toLocaleTimeString();
+            newMessage.innerHTML = '<strong>[' + time + ']</strong> ' + notification.body;
+
+            messageList.insertBefore(newMessage, messageList.firstChild);
+        });
+    }, function(error) {
+        console.error('STOMP xatolik yuz berdi: ', error);
+    });
+</script>
+</body>
+</html>
