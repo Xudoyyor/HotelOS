@@ -1,44 +1,70 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <title>HotelOS - Real Vaqtli Panel</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>HotelOS - Jonli Operatsiyalar Paneli</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f9; padding: 20px; }
-        .dashboard-box { border: 2px solid #0056b3; padding: 15px; border-radius: 10px; background: white; }
-        .notification { padding: 10px; margin: 5px 0; background: #e3f2fd; border-left: 5px solid #0056b3; }
+        body { font-family: -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; background: #0f172a; color: #e2e8f0; }
+        header { padding: 16px 24px; background: #1e293b; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 18px; margin: 0; }
+        #status { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: #334155; }
+        #status.on { background: #166534; }
+        .wrap { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; padding: 24px; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; }
+        .card h2 { font-size: 14px; text-transform: uppercase; letter-spacing: .05em; color: #94a3b8; margin: 0 0 12px; }
+        .room { display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 8px; background: #0f172a; margin-bottom: 8px; }
+        .badge { font-size: 12px; padding: 2px 8px; border-radius: 6px; background: #334155; }
+        .ROOM { border-left: 3px solid #38bdf8; }
+        .ORDER { border-left: 3px solid #fbbf24; }
+        .MAINTENANCE { border-left: 3px solid #f87171; }
+        .activity { font-size: 13px; padding: 8px 12px; border-bottom: 1px solid #334155; }
+        .muted { color: #64748b; font-size: 12px; }
     </style>
 </head>
 <body>
-
-<h1>HotelOS: Jonli Operatsiyalar Paneli</h1>
-<div class="dashboard-box">
-    <h3>So'nggi hodisalar (Sahifa yangilanmayapti!)</h3>
-    <div id="messages"></div>
+<header>
+    <h1>HotelOS - Jonli Operatsiyalar Paneli</h1>
+    <span id="status">Ulanmoqda...</span>
+</header>
+<div class="wrap">
+    <div class="card">
+        <h2>Xonalar holati (<span id="roomCount">0</span>)</h2>
+        <div id="rooms"><p class="muted">Ma'lumot kutilmoqda...</p></div>
+    </div>
+    <div class="card">
+        <h2>Oxirgi faoliyat</h2>
+        <div id="activity"><p class="muted">Hodisalar kutilmoqda...</p></div>
+    </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 <script>
-    // Toza mahalliy WebSocket orqali ulanish - muammolarni chetlab o'tadi
-    var socket = new WebSocket('ws://localhost:8086/ws-hotel');
-    var stompClient = Stomp.over(socket);
+    function render(snapshot) {
+        const rooms = snapshot.rooms || [];
+        const activity = snapshot.activity || [];
+        document.getElementById('roomCount').innerText = rooms.length;
+        document.getElementById('rooms').innerHTML = rooms.length
+            ? rooms.map(r => `<div class="room ${r.type || 'ROOM'}"><span><b>Xona ${r.roomNumber || '-'}</b> <span class="muted">${r.detail || ''}</span></span><span class="badge">${r.status || ''}</span></div>`).join('')
+            : '<p class="muted">Hozircha xona holati mavjud emas.</p>';
+        document.getElementById('activity').innerHTML = activity.length
+            ? activity.map(a => `<div class="activity">[${a.type || 'EVENT'}] Xona ${a.roomNumber || '-'} -> <b>${a.status || ''}</b> <span class="muted">${a.timestamp || ''}</span></div>`).join('')
+            : '<p class="muted">Hodisalar mavjud emas.</p>';
+    }
 
-    stompClient.connect({}, function (frame) {
-        console.log('Muvaffaqiyatli ulandi: ' + frame);
+    fetch('/api/dashboard/state').then(r => r.json()).then(render).catch(() => {});
 
-        stompClient.subscribe('/topic/updates', function (notification) {
-            var messageList = document.getElementById('messages');
-            var newMessage = document.createElement('div');
-            newMessage.className = 'notification';
-
-            var time = new Date().toLocaleTimeString();
-            newMessage.innerHTML = '<strong>[' + time + ']</strong> ' + notification.body;
-
-            messageList.insertBefore(newMessage, messageList.firstChild);
+    const socket = new SockJS('/ws-hotel');
+    const stomp = Stomp.over(socket);
+    stomp.debug = null;
+    stomp.connect({}, function () {
+        const s = document.getElementById('status');
+        s.innerText = 'Jonli ulanish faol';
+        s.classList.add('on');
+        stomp.subscribe('/topic/updates', function (msg) {
+            render(JSON.parse(msg.body));
         });
-    }, function(error) {
-        console.error('STOMP xatolik yuz berdi: ', error);
     });
 </script>
 </body>

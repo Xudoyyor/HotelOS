@@ -1,18 +1,20 @@
 plugins {
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.6'
     id 'java'
-    id 'org.springframework.boot' version '3.5.6'
-    id 'io.spring.dependency-management' version '1.1.7'
 }
-
-group = 'com.hotelos'
-version = '0.0.1-SNAPSHOT'
-description = 'gateway-service'
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
 }
+
+group = 'com.hotelos'
+version = '0.0.1-SNAPSHOT'
+description = 'gateway-service'
+
+
 
 repositories {
     mavenCentral()
@@ -26,8 +28,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     implementation 'org.springframework.boot:spring-boot-starter'
-    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
-
     // Spring Cloud Gateway-ning WebFlux reaktiv starteri (Boya aytgan yangi versiyasi)
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
 

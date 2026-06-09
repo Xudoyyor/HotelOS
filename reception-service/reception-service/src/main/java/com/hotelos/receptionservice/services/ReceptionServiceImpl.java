@@ -78,7 +78,6 @@ public class ReceptionServiceImpl implements ReceptionService {
      */
     @Override
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    @CacheEvict(value = "roomsCache", allEntries = true)
     public Booking checkIn(UUID guestId, Long roomTypeId, Integer preferredFloor, int durationDays) {
         validateCheckInRequest(guestId, roomTypeId, durationDays);
 
@@ -200,5 +199,17 @@ public class ReceptionServiceImpl implements ReceptionService {
         } catch (Exception e) {
             log.error("Keshni tozalashda xatolik: ", e);
         }
+    }
+
+
+    @Override
+    @Transactional
+    public Guest createGuest(Guest guest) {
+        return guestRepository.save(guest);
+    }
+
+    @Override
+    public List<Guest> getAllGuests() {
+        return guestRepository.findAll();
     }
 }

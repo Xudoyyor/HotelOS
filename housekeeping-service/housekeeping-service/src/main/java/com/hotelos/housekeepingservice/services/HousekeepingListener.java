@@ -2,6 +2,7 @@ package com.hotelos.housekeepingservice.services;
 import com.hotelos.housekeepingservice.DTO.RoomVacatedEvent;
 import com.hotelos.housekeepingservice.Entities.CleaningTask;
 import com.hotelos.housekeepingservice.config.RabbitMQConfig;
+import com.hotelos.housekeepingservice.enums.CleaningStatus;
 import com.hotelos.housekeepingservice.repositories.CleaningTaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +26,7 @@ public class HousekeepingListener {
         CleaningTask task = CleaningTask.builder()
                 .roomId(event.getRoomId())
                 .roomNumber(event.getRoomNumber())
-                .status("NAVBATDA")
+                .status(CleaningStatus.NAVBATDA)
                 .createdAt(LocalDateTime.now())
                 .build();
 

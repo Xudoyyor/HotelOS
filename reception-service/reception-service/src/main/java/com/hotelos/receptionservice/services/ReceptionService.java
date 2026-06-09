@@ -1,5 +1,6 @@
 package com.hotelos.receptionservice.services;
 import com.hotelos.receptionservice.entities.Booking;
+import com.hotelos.receptionservice.entities.Guest;
 import com.hotelos.receptionservice.entities.Room;
 import org.springframework.data.domain.Pageable;
 
@@ -13,4 +14,7 @@ public interface ReceptionService {
     List<Room> getAllRooms(Pageable pageable);
 
     Room createRoom(Room room);
+
+    Guest createGuest(Guest guest);
+    List<Guest> getAllGuests();
 }

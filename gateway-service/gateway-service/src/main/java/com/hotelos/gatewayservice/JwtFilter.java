@@ -27,9 +27,6 @@ public class JwtFilter implements WebFilter {
 
 
         if (path.startsWith("/ws-hotel") || path.startsWith("/api/auth")
-                || path.startsWith("/swagger-ui.html")
-                || path.startsWith("/swagger-ui/**")
-                || path.startsWith("/v3/api-docs/**")
                 || path.startsWith("/webjars/**")) {
 
             return chain.filter(exchange);

@@ -3,9 +3,12 @@ package com.hotelos.maintenanceservice.controller;
 import com.hotelos.maintenanceservice.model.Task;
 import com.hotelos.maintenanceservice.model.TaskRequest;
 import com.hotelos.maintenanceservice.service.MaintenanceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/maintenance/tasks")
@@ -15,7 +18,7 @@ public class MaintenanceController {
     private final MaintenanceService maintenanceService;
 
     @PostMapping
-    public ResponseEntity<Task> reportIssue(@RequestBody TaskRequest newTask) {
+    public ResponseEntity<Task> reportIssue(@Valid @RequestBody TaskRequest newTask) {
         Task task = Task.builder()
                 .roomNumber(newTask.roomNumber())
                 .description(newTask.description())
@@ -25,8 +28,8 @@ public class MaintenanceController {
     }
 
     @GetMapping("/next")
-    public ResponseEntity<Task> getNextTask() {
-        Task nextTask = maintenanceService.getNextUrgentTask();
+    public ResponseEntity<Task> assignNext(@RequestParam(defaultValue = "Navbatchi texnik") String technician) {
+        Task nextTask = maintenanceService.assignNextTask(technician);
         if (nextTask == null) {
             return ResponseEntity.noContent().build();
         }
@@ -38,6 +41,8 @@ public class MaintenanceController {
         return ResponseEntity.ok(maintenanceService.resolveTask(id));
     }
 
-
-
+    @GetMapping
+    public ResponseEntity<List<Task>> getAll() {
+        return ResponseEntity.ok(maintenanceService.getAllTasks());
+    }
 }

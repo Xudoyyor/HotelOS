@@ -1,6 +1,7 @@
 package com.hotelos.receptionservice.controllers;
 
 import com.hotelos.receptionservice.entities.Booking;
+import com.hotelos.receptionservice.entities.Guest;
 import com.hotelos.receptionservice.entities.Room;
 import com.hotelos.receptionservice.services.ReceptionService;
 import jakarta.validation.Valid;
@@ -38,10 +39,7 @@ public class ReceptionController {
         return ResponseEntity.ok(receptionService.createRoom(room));
     }
 
-    /**
-     * Check-in. Kiritilgan ma'lumotlar Bean Validation orqali tekshiriladi (TS-08):
-     * durationDays kamida 1, guestId/roomTypeId/preferredFloor null bo'lmasligi shart.
-     */
+
     @PostMapping("/check-in")
     public ResponseEntity<Booking> checkIn(
             @RequestParam @NotNull UUID guestId,
@@ -61,5 +59,16 @@ public class ReceptionController {
         response.put("roomId", roomId);
         response.put("totalAmountDue", totalBill);
         return ResponseEntity.ok(response);
+    }
+
+
+    @PostMapping("/guests")
+    public ResponseEntity<Guest> createGuest(@Valid @RequestBody Guest guest) {
+        return new ResponseEntity<>(receptionService.createGuest(guest), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/guests")
+    public ResponseEntity<List<Guest>> getGuests() {
+        return ResponseEntity.ok(receptionService.getAllGuests());
     }
 }
