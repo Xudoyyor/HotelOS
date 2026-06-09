@@ -26,6 +26,12 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private StatusTask status;
 
+    @Column(name = "assigned_technician")
+    private String assignedTechnician;
+
     @Column(name = "reported_at")
     private LocalDateTime reportedAt;
+
+    @Column(name = "resolved_at")
+    private LocalDateTime resolvedAt;
 }
